@@ -30,6 +30,16 @@ npm run pack    # unpacked app only, in release/win-unpacked (quick smoke test)
 
 This produces a Windows NSIS installer. It installs per-user (no admin), lets you pick the install folder, adds Start-menu and desktop shortcuts, and registers an uninstaller. Running `npm run dist` on macOS or Linux builds a `.dmg` or AppImage instead. The app icon source is `build/icon.svg`, and `build/icon.png` is the 512px render electron-builder uses.
 
+### Releases
+
+GitHub Actions builds the installer for you (`.github/workflows/release.yml`):
+
+```bash
+git tag v0.2.0 && git push origin v0.2.0
+```
+
+That builds `NEONWIRE-Setup-0.2.0.exe` and publishes it as a GitHub Release with auto-generated notes. The version comes from the tag, so you don't need to bump `package.json` first. To get a test build without cutting a release, use **Actions → Release → Run workflow**; the installer then appears as a downloadable artifact on the run.
+
 The installer isn't code-signed, so Windows SmartScreen will warn on first run ("More info → Run anyway"). Settings and tracking history live in `%APPDATA%\neonwire` and survive uninstalls and upgrades.
 
 > npm 11+ blocks dependency install scripts unless they're allowlisted. `package.json` → `allowScripts` approves Electron's (it downloads the Electron binary). If `node_modules/electron/dist` is missing after `npm install`, run `node node_modules/electron/install.js`.

@@ -21,6 +21,19 @@ npm start       # production build, then launch
 
 Requires Node 20+.
 
+## Build the installer
+
+```bash
+npm run dist    # → release/NEONWIRE-Setup-<version>.exe
+npm run pack    # unpacked app only, in release/win-unpacked (quick smoke test)
+```
+
+This produces a Windows NSIS installer. It installs per-user (no admin), lets you pick the install folder, adds Start-menu and desktop shortcuts, and registers an uninstaller. Running `npm run dist` on macOS or Linux builds a `.dmg` or AppImage instead. The app icon source is `build/icon.svg`, and `build/icon.png` is the 512px render electron-builder uses.
+
+The installer isn't code-signed, so Windows SmartScreen will warn on first run ("More info → Run anyway"). Settings and tracking history live in `%APPDATA%\neonwire` and survive uninstalls and upgrades.
+
+> npm 11+ blocks dependency install scripts unless they're allowlisted. `package.json` → `allowScripts` approves Electron's (it downloads the Electron binary). If `node_modules/electron/dist` is missing after `npm install`, run `node node_modules/electron/install.js`.
+
 > If Electron crashes on launch with `Cannot read properties of undefined (reading 'handle')`, your shell has `ELECTRON_RUN_AS_NODE=1` set (some editor-spawned terminals do). Unset it and run again.
 
 ## Architecture

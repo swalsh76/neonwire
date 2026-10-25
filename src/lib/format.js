@@ -24,7 +24,10 @@ export function delta(n) {
   return n > 0 ? `+${compact(n)}` : n < 0 ? `−${compact(-n)}` : '±0';
 }
 
-export const clock = (t) => new Date(t).toLocaleTimeString([], { hour12: false });
+// Strip Electron's "Error invoking remote method 'x': Error: " wrapper from IPC errors.
+export const ipcError = (err) => String(err?.message || err).replace(/^Error invoking remote method '[^']+': (Error: )?/, '');
+
+export const clock =(t) => new Date(t).toLocaleTimeString([], { hour12: false });
 
 export function host(url) {
   try {

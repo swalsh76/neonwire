@@ -1,6 +1,7 @@
 // Fetchers turn a source config into a list of normalized items:
 // { key, rawId, title, url, discussionUrl, author, score, comments, time, summary }
 const Parser = require('rss-parser');
+const redditAuth = require('./reddit-auth');
 
 const UA = 'neonwire/0.1 (desktop feed monitor)';
 const rss = new Parser({ customFields: { item: [['slash:comments', 'slashComments']] } });
@@ -60,7 +61,7 @@ async function fetchHN(src) {
   return items.filter((it) => it && !it.deleted && !it.dead).map(hnItem);
 }
 
-// ---- Reddit (public JSON, falls back to RSS) ------------------------------
+// ---- Reddit (OAuth API when logged in, else public JSON, else RSS) --------
 function redditItem(d) {
   return {
     key: `reddit:${d.id}`,
@@ -76,20 +77,28 @@ function redditItem(d) {
   };
 }
 
+const redditListing = (json) => json.data.children.map((c) => c.data).filter((d) => !d.stickied).map(redditItem);
+
 // Reddit frequently 403s anonymous JSON; after a failure, skip straight to RSS for a while.
 let redditJsonBlockedUntil = 0;
 
 async function fetchReddit(src) {
-  const sub = encodeURIComponent(src.subreddit);
+  const sub = (src.subreddit || '').trim();
   const sort = src.sort || 'hot';
+  const path = sub ? `/r/${encodeURIComponent(sub)}/${sort}` : `/${sort}`; // no subreddit = your front page
+
+  // Logged in: official API with real scores and comment counts.
+  const json = await redditAuth.api(`${path}?limit=40&raw_json=1`);
+  if (json) return redditListing(json);
+  if (!sub) throw new Error('Front page needs a Reddit login');
+
   try {
     if (Date.now() < redditJsonBlockedUntil) throw new Error('json blocked');
-    const json = await http(`https://www.reddit.com/r/${sub}/${sort}.json?limit=40&raw_json=1`);
-    return json.data.children.map((c) => c.data).filter((d) => !d.stickied).map(redditItem);
+    return redditListing(await http(`https://www.reddit.com${path}.json?limit=40&raw_json=1`));
   } catch {
     redditJsonBlockedUntil = Math.max(redditJsonBlockedUntil, Date.now() + 15 * 60_000);
     // Reddit often rejects anonymous JSON requests; RSS still works (no scores though).
-    const items = await fetchRSS({ ...src, url: `https://www.reddit.com/r/${sub}/${sort}/.rss` });
+    const items = await fetchRSS({ ...src, url: `https://www.reddit.com${path}/.rss` });
     return items.map((it) => {
       const m = /comments\/([a-z0-9]+)/i.exec(it.url || '');
       return m ? { ...it, key: `reddit:${m[1]}`, rawId: m[1], discussionUrl: it.url } : it;
@@ -98,6 +107,8 @@ async function fetchReddit(src) {
 }
 
 async function redditThread(id) {
+  const authed = await redditAuth.api(`/comments/${id}?limit=1&raw_json=1`);
+  if (authed) return redditItem(authed[0].data.children[0].data);
   if (Date.now() < redditJsonBlockedUntil) return null;
   try {
     const json = await http(`https://www.reddit.com/comments/${id}.json?limit=1&raw_json=1`);

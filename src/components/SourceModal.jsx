@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BLANK, HN_LISTS, JSON_FIELDS, PALETTE, PRESETS, REDDIT_SORTS, TYPES } from '../lib/presets.js';
+import { ipcError } from '../lib/format.js';
 
 function Field({ label, children, wide }) {
   return (
@@ -41,7 +42,7 @@ export default function SourceModal({ initial, sources, onClose }) {
       await window.wire.saveSource(form);
       onClose();
     } catch (err) {
-      setError(err.message.replace(/^Error invoking remote method '[^']+': (Error: )?/, ''));
+      setError(ipcError(err));
     } finally {
       setBusy(false);
     }
@@ -111,8 +112,8 @@ export default function SourceModal({ initial, sources, onClose }) {
 
             {form.type === 'reddit' && (
               <>
-                <Field label="SUBREDDIT">
-                  <input required value={form.subreddit} placeholder="programming" onChange={(e) => set('subreddit', e.target.value.replace(/^\/?r\//, ''))} />
+                <Field label="SUBREDDIT (BLANK = YOUR FRONT PAGE, NEEDS LOGIN)">
+                  <input value={form.subreddit} placeholder="programming" onChange={(e) => set('subreddit', e.target.value.replace(/^\/?r\//, ''))} />
                 </Field>
                 <Field label="SORT">
                   <select value={form.sort} onChange={(e) => set('sort', e.target.value)}>

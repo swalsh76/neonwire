@@ -3,6 +3,7 @@ const path = require('path');
 const crypto = require('crypto');
 const store = require('./store');
 const { fetchSource, fetchThread } = require('./fetchers');
+const redditAuth = require('./reddit-auth');
 
 const DEV_URL = process.env.VITE_DEV_SERVER_URL;
 const SOURCE_TYPES = ['hn', 'reddit', 'rss', 'json'];
@@ -150,7 +151,8 @@ function sanitizeSource(input, existing = {}) {
   const src = { ...existing, ...input };
   if (!SOURCE_TYPES.includes(src.type)) throw new Error(`Bad source type: ${src.type}`);
   src.id ||= `${src.type}-${crypto.randomUUID().slice(0, 8)}`;
-  src.name = String(src.name || src.url || src.subreddit || src.type).slice(0, 80);
+  const fallbackName = src.type === 'reddit' ? (src.subreddit ? `r/${src.subreddit}` : 'Reddit // Front page') : src.url;
+  src.name = String(src.name || fallbackName || src.type).slice(0, 80);
   src.intervalSec = Math.max(30, Number(src.intervalSec) || 120);
   src.enabled = src.enabled !== false;
   src.notify = !!src.notify;
@@ -159,7 +161,7 @@ function sanitizeSource(input, existing = {}) {
 
 ipcMain.handle('state:get', () => {
   const { sources, watch } = store.get();
-  return { sources, watch, feeds, logs };
+  return { sources, watch, feeds, logs, reddit: redditAuth.status() };
 });
 
 ipcMain.handle('source:save', (_e, input) => {
@@ -222,6 +224,34 @@ ipcMain.handle('watch:remove', (_e, key) => {
 });
 
 ipcMain.handle('open', (_e, url) => openExternal(url));
+
+// ---- Reddit login ----------------------------------------------------------
+const resyncReddit = () =>
+  store.get().sources.filter((s) => s.type === 'reddit').forEach((s, i) => schedule(s.id, i * 250));
+
+redditAuth.onChange((status) => send('reddit', status));
+
+ipcMain.handle('reddit:login', async (_e, creds) => {
+  log('info', 'reddit :: awaiting browser authorization…');
+  try {
+    const status = await redditAuth.login(creds);
+    log('new', `reddit :: linked as u/${status.username}`);
+    resyncReddit();
+    return status;
+  } catch (err) {
+    log('error', `reddit :: ${err.message}`);
+    throw err;
+  }
+});
+
+ipcMain.handle('reddit:cancel', () => redditAuth.cancel());
+
+ipcMain.handle('reddit:logout', async () => {
+  const status = await redditAuth.logout();
+  log('info', 'reddit :: logged out — back to anonymous access');
+  resyncReddit();
+  return status;
+});
 
 // ---- window ----------------------------------------------------------------
 function createWindow() {

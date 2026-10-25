@@ -45,7 +45,7 @@ function SourceRow({ s, feed, active, now, onSelect, onEdit }) {
   );
 }
 
-export default function Sidebar({ sources, feeds, selected, onSelect, onAdd, onEdit, now }) {
+export default function Sidebar({ sources, feeds, selected, onSelect, onAdd, onEdit, reddit, onReddit, now }) {
   const total = sources.filter((s) => s.enabled).reduce((n, s) => n + (feeds[s.id]?.items?.length || 0), 0);
   return (
     <aside className="panel sidebar">
@@ -77,6 +77,15 @@ export default function Sidebar({ sources, feeds, selected, onSelect, onAdd, onE
           />
         ))}
       </div>
+      <footer className="side-foot">
+        <button className={`uplink ${reddit.loggedIn ? 'on' : ''}`} onClick={onReddit} title="Reddit account">
+          <span className="dot" />
+          <span className="uplink-name">REDDIT</span>
+          <span className="uplink-state">
+            {reddit.pending ? 'LINKING…' : reddit.loggedIn ? `u/${reddit.username}` : 'ANONYMOUS · LOG IN'}
+          </span>
+        </button>
+      </footer>
     </aside>
   );
 }

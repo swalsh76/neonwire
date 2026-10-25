@@ -52,6 +52,7 @@ The installer isn't code-signed, so Windows SmartScreen will warn on first run (
 electron/
   main.js       window, per-source poll scheduler, thread tracking, IPC
   fetchers.js   one fetcher per source type → normalized items
+  reddit-auth.js  Reddit OAuth (loopback redirect, encrypted refresh token)
   store.js      JSON persistence in the app's userData folder
   preload.js    window.wire bridge (contextIsolation, sandboxed)
 src/
@@ -69,4 +70,16 @@ Config and history live in `%APPDATA%/neonwire/neonwire.json`.
 
 ## Notes
 
-- Reddit often blocks anonymous JSON requests. NEONWIRE then falls back to the subreddit's RSS feed, which has no scores or comment counts.
+### Reddit login
+
+Without a login, Reddit sources fall back to RSS: headlines only, with no scores or comment counts. Reddit blocks most anonymous API requests. Click **REDDIT** at the bottom of the sidebar to log in:
+
+1. Create an app at <https://www.reddit.com/prefs/apps> of type **installed app**.
+2. Set its redirect URI to `http://127.0.0.1:65010/callback`.
+3. Paste the client ID into NEONWIRE and click **Log in with Reddit**. Your browser opens Reddit's authorization page.
+
+Once you're logged in, Reddit sources use the official API, so thread tracking works for Reddit posts too. A Reddit source with a blank subreddit streams your personal front page.
+
+The refresh token (and the client secret, if you use a "web app" or "script" type) is encrypted with the OS keystore via Electron `safeStorage`. Logging out revokes the token with Reddit.
+
+> Since Nov 2025, Reddit requires approval for **new** API apps under its Responsible Builder Policy. Apps registered before then keep working.

@@ -3,7 +3,7 @@ export const TYPES = { rss: 'RSS / ATOM', hn: 'HACKER NEWS', reddit: 'REDDIT', j
 export const PALETTE = ['#00f0ff', '#ff2bd6', '#f9f002', '#39ff14', '#ff8a00', '#b967ff', '#ff3860', '#05ffa1'];
 
 export const HN_LISTS = ['topstories', 'newstories', 'beststories', 'showstories', 'askstories'];
-export const REDDIT_SORTS = ['hot', 'new', 'rising', 'top'];
+export const REDDIT_SORTS = ['hot', 'new', 'rising', 'top', 'best'];
 
 export const JSON_FIELDS = ['id', 'title', 'url', 'discussionUrl', 'score', 'comments', 'time', 'author', 'summary'];
 
@@ -21,6 +21,7 @@ export const PRESETS = [
   { label: 'HN // Best', src: { type: 'hn', name: 'Hacker News // Best', list: 'beststories', limit: 30, intervalSec: 120 } },
   { label: 'HN // Show', src: { type: 'hn', name: 'Show HN', list: 'showstories', limit: 30, intervalSec: 120 } },
   { label: 'HN // Ask', src: { type: 'hn', name: 'Ask HN', list: 'askstories', limit: 30, intervalSec: 120 } },
+  { label: 'Reddit // My front page (login)', src: { type: 'reddit', name: 'Reddit // Front page', subreddit: '', sort: 'best', intervalSec: 120 } },
   { label: 'r/technology', src: { type: 'reddit', name: 'r/technology', subreddit: 'technology', sort: 'hot', intervalSec: 120 } },
   { label: 'r/worldnews', src: { type: 'reddit', name: 'r/worldnews', subreddit: 'worldnews', sort: 'hot', intervalSec: 120 } },
   { label: 'r/cyberpunk', src: { type: 'reddit', name: 'r/cyberpunk', subreddit: 'Cyberpunk', sort: 'hot', intervalSec: 300 } },

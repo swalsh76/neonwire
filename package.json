@@ -1,6 +1,6 @@
 {
   "name": "neonwire",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Live feed / thread monitor with a neon cyberpunk UI",
   "author": "Steve Walsh",
   "main": "electron/main.js",
@@ -46,7 +46,14 @@
       "package.json"
     ],
     "win": {
-      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
       "icon": "build/icon.png"
     },
     "nsis": {

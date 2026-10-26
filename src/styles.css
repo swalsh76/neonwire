@@ -54,7 +54,7 @@ body::after {
   inset: 0;
   pointer-events: none;
   z-index: 9999;
-  background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0, 10, 20, 0.22) 2px 3px);
+  background: repeating-linear-gradient(to bottom, transparent 0 3px, rgba(0, 10, 20, 0.08) 3px 4px);
 }
 
 ::selection { background: var(--amber); color: #120b00; }

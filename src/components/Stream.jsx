@@ -1,3 +1,5 @@
+import PanelHead from './PanelHead.jsx';
+import RingMark from './RingMark.jsx';
 import { FLASH_MS, NEW_MS, ago, compact, host, velocity } from '../lib/format.js';
 
 const SORTS = [
@@ -42,7 +44,7 @@ function Card({ it, now, watched }) {
           className={`btn xs ${watched ? 'on' : 'ghost'}`}
           onClick={() => (watched ? window.wire.unwatch(it.key) : window.wire.watch(item))}
         >
-          {watched ? '◉ TRACKING' : '○ TRACK'}
+          {watched ? 'TRACKING' : 'TRACK'}
         </button>
       </div>
     </article>
@@ -52,10 +54,7 @@ function Card({ it, now, watched }) {
 export default function Stream({ items, title, now, watchKeys, sort, setSort }) {
   return (
     <main className="panel stream">
-      <header className="ph">
-        <span>
-          LIVE STREAM <em>//</em> {title} <b>[{items.length}]</b>
-        </span>
+      <PanelHead idx="02" title={`LIVE STREAM // ${title}`} jp="ストリーム" count={items.length}>
         <div className="seg">
           {SORTS.map(([key, label]) => (
             <button key={key} className={sort === key ? 'on' : ''} onClick={() => setSort(key)}>
@@ -63,11 +62,12 @@ export default function Stream({ items, title, now, watchKeys, sort, setSort }) 
             </button>
           ))}
         </div>
-      </header>
+      </PanelHead>
       <div className="scroll cards">
         {items.length === 0 ? (
           <div className="empty">
-            NO SIGNAL
+            <RingMark spin />
+            STANDBY
             <small>waiting for feeds to sync…</small>
           </div>
         ) : (

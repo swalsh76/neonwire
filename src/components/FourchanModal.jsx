@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { PALETTE } from '../lib/presets.js';
 import { ipcError } from '../lib/format.js';
+import PanelHead from './PanelHead.jsx';
 
 // Board picker: each checked board is a 'fourchan' source; applying adds/removes sources to match.
 export default function FourchanModal({ sources, onClose }) {
@@ -77,15 +78,12 @@ export default function FourchanModal({ sources, onClose }) {
 
   return (
     <div className="modal-bg" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="panel modal chan-modal" style={{ '--c': 'var(--chan)' }}>
-        <header className="ph">
-          <span>
-            UPLINK // 4CHAN <b>[{checked.size}]</b>
-          </span>
+      <div className="panel modal chan-modal">
+        <PanelHead idx="+" title="UPLINK // 4CHAN" jp="掲示板" count={checked.size}>
           <button type="button" className="x" onClick={onClose}>
             ✕
           </button>
-        </header>
+        </PanelHead>
 
         <div className="modal-body">
           <p className="lead">

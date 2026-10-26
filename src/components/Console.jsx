@@ -11,8 +11,9 @@ export default function Console({ logs, ticker }) {
 
   return (
     <section className="panel console">
+      <div className="ruler" />
       <div className="ticker">
-        <span className="ticker-label">◢ NEWSWIRE</span>
+        <span className="ticker-label">NEWSWIRE</span>
         <div className="ticker-window">
           <div className="ticker-track" style={{ animationDuration: `${Math.max(40, ticker.length * 7)}s` }}>
             {[...ticker, ...ticker].map((it, i) => (

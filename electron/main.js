@@ -270,12 +270,12 @@ function createWindow() {
     height: 940,
     minWidth: 1100,
     minHeight: 680,
-    backgroundColor: '#07060d',
+    backgroundColor: '#06111a',
     title: 'NEONWIRE',
     // Packaged builds get the icon embedded in the .exe; this covers `npm run dev`.
     ...(app.isPackaged ? {} : { icon: path.join(__dirname, '..', 'build', 'icon.png') }),
     titleBarStyle: 'hidden',
-    titleBarOverlay: { color: '#07060d', symbolColor: '#00f0ff', height: 44 },
+    titleBarOverlay: { color: '#0b1c27', symbolColor: '#e3f4ff', height: 52 },
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

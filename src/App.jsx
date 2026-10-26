@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import TopBar from './components/TopBar.jsx';
+import RingMark from './components/RingMark.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import Stream from './components/Stream.jsx';
 import Watchlist from './components/Watchlist.jsx';
@@ -120,6 +121,7 @@ export default function App() {
 
   return (
     <div className="app">
+      <RingMark className="bg-ring" spin />
       <TopBar stats={stats} query={query} setQuery={setQuery} now={now} />
       <Sidebar
         sources={sources}

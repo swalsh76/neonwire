@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ipcError } from '../lib/format.js';
+import PanelHead from './PanelHead.jsx';
 
 const APPS_URL = 'https://www.reddit.com/prefs/apps';
 const REDDITDEV_URL = 'https://www.reddit.com/r/redditdev/';
@@ -44,13 +45,12 @@ export default function RedditModal({ status, onClose }) {
 
   return (
     <div className="modal-bg" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <form className="panel modal reddit-modal" onSubmit={login} style={{ '--c': '#ff4500' }}>
-        <header className="ph">
-          <span>UPLINK // REDDIT</span>
+      <form className="panel modal reddit-modal" onSubmit={login}>
+        <PanelHead idx="+" title="UPLINK // REDDIT" jp="認証">
           <button type="button" className="x" onClick={onClose}>
             ✕
           </button>
-        </header>
+        </PanelHead>
 
         <div className="modal-body">
           {status.loggedIn ? (

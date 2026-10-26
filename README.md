@@ -1,6 +1,6 @@
 # NEONWIRE // signal monitor
 
-A desktop app that polls news sites, forums and APIs, merges everything into one live stream, and tracks how individual threads grow over time. It's built with Electron and React, with a bright cyberpunk look.
+A desktop app that polls news sites, forums and APIs, merges everything into one live stream, and tracks how individual threads grow over time. It's built with Electron and React, styled after the steel-blue, ring-and-readout screens of *Ghost in the Shell: Stand Alone Complex*.
 
 ## Features
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BLANK, HN_LISTS, JSON_FIELDS, PALETTE, PRESETS, REDDIT_SORTS, TYPES } from '../lib/presets.js';
 import { ipcError } from '../lib/format.js';
+import PanelHead from './PanelHead.jsx';
 
 function Field({ label, children, wide }) {
   return (
@@ -51,12 +52,11 @@ export default function SourceModal({ initial, sources, onClose }) {
   return (
     <div className="modal-bg" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <form className="panel modal" onSubmit={submit} style={{ '--c': form.color }}>
-        <header className="ph">
-          <span>{isEdit ? 'RECONFIGURE NODE' : 'JACK IN // NEW SOURCE'}</span>
+        <PanelHead idx="+" title={isEdit ? 'RECONFIGURE NODE' : 'NEW SOURCE'} jp={isEdit ? '設定' : '接続'}>
           <button type="button" className="x" onClick={onClose}>
             ✕
           </button>
-        </header>
+        </PanelHead>
 
         <div className="modal-body">
           {!isEdit && (

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import RingMark from './RingMark.jsx';
 import { clock } from '../lib/format.js';
 
 function Chip({ label, value, tone }) {
@@ -32,12 +33,16 @@ export default function TopBar({ stats, query, setQuery, now }) {
   return (
     <header className="topbar">
       <div className="brand">
-        <span className="logo" data-text="NEONWIRE">NEONWIRE</span>
-        <span className="slash">//</span>
-        <span className="sub">SIGNAL MONITOR</span>
+        <RingMark className="brand-ring" spin />
+        <div className="brand-text">
+          <span className="logo">NEONWIRE</span>
+          <span className="sub">
+            PUBLIC NET MONITOR <i>公共ネット監視</i>
+          </span>
+        </div>
       </div>
       <div className="chips">
-        <Chip label="NODES" value={`${stats.online}/${stats.total}`} tone={stats.errors ? 'warn' : 'ok'} />
+        <Chip label="NODES ONLINE" value={`${stats.online}/${stats.total}`} tone={stats.errors ? 'warn' : 'ok'} />
         <Chip label="ITEMS" value={stats.items} />
         <Chip label="NEW" value={stats.fresh} tone={stats.fresh ? 'hot' : ''} />
         <Chip label="TRACKING" value={stats.tracking} />
@@ -47,7 +52,7 @@ export default function TopBar({ stats, query, setQuery, now }) {
         <input
           ref={search}
           className="search"
-          placeholder="SEARCH THE WIRE…  [/]"
+          placeholder="SEARCH THE NET…  [/]"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -55,7 +60,10 @@ export default function TopBar({ stats, query, setQuery, now }) {
       <button className="btn" onClick={() => window.wire.refresh()}>
         ⟳ SYNC ALL
       </button>
-      <div className="clock">{clock(now)}</div>
+      <div className="clock">
+        <small>LOCAL TIME</small>
+        {clock(now)}
+      </div>
     </header>
   );
 }

@@ -1,6 +1,7 @@
 export const TYPES = { rss: 'RSS / ATOM', hn: 'HACKER NEWS', reddit: 'REDDIT', fourchan: '4CHAN', json: 'JSON API' };
 
-export const PALETTE = ['#00f0ff', '#ff2bd6', '#f9f002', '#39ff14', '#ff8a00', '#b967ff', '#ff3860', '#05ffa1'];
+// Stand Alone Complex-ish signal colors: holo cyan, ONLINE teal, selection amber, net-dive green, cobalt, ice.
+export const PALETTE = ['#5cd6ff', '#2fe0b0', '#ffb347', '#7fa8ff', '#46ff8c', '#ff7a5c', '#c3a6ff', '#e3f4ff'];
 
 export const HN_LISTS = ['topstories', 'newstories', 'beststories', 'showstories', 'askstories'];
 export const REDDIT_SORTS = ['hot', 'new', 'rising', 'top', 'best'];

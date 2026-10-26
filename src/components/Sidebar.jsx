@@ -1,3 +1,4 @@
+import PanelHead from './PanelHead.jsx';
 import { NEW_MS } from '../lib/format.js';
 
 const wire = () => window.wire;
@@ -12,7 +13,7 @@ function SourceRow({ s, feed, active, now, onSelect, onEdit }) {
     status === 'loading' ? 'FETCHING…'
     : status === 'error' ? 'SIGNAL LOST'
     : status === 'off' ? 'OFFLINE'
-    : feed?.nextAt ? `T-${Math.ceil(left / 1000)}s`
+    : feed?.nextAt ? `ONLINE · T-${Math.ceil(left / 1000)}s`
     : 'STANDBY';
   const stop = (fn) => (e) => {
     e.stopPropagation();
@@ -50,16 +51,13 @@ export default function Sidebar({ sources, feeds, selected, onSelect, onAdd, onE
   const total = sources.filter((s) => s.enabled).reduce((n, s) => n + (feeds[s.id]?.items?.length || 0), 0);
   return (
     <aside className="panel sidebar">
-      <header className="ph">
-        <span>
-          SOURCES <b>[{sources.length}]</b>
-        </span>
+      <PanelHead idx="01" title="SOURCES" jp="情報源" count={sources.length}>
         <button className="btn xs" onClick={onAdd}>
-          + JACK IN
+          + ADD
         </button>
-      </header>
-      <div className="scroll">
-        <div className={`src all ${!selected ? 'active' : ''}`} style={{ '--c': '#ffffff' }} onClick={() => onSelect(null)}>
+      </PanelHead>
+      <div className="scroll src-list">
+        <div className={`src all ${!selected ? 'active' : ''}`} style={{ '--c': 'var(--ice)' }} onClick={() => onSelect(null)}>
           <div className="src-row">
             <span className="dot" />
             <span className="src-name">ALL FEEDS</span>

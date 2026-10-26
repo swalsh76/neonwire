@@ -1,7 +1,7 @@
 {
   "name": "neonwire",
   "version": "0.2.0",
-  "description": "Live feed / thread monitor with a neon cyberpunk UI",
+  "description": "Live feed / thread monitor with a Stand Alone Complex-style net-monitor UI",
   "author": "Steve Walsh",
   "main": "electron/main.js",
   "private": true,
@@ -16,7 +16,7 @@
     "rss-parser": "^3.13.0"
   },
   "devDependencies": {
-    "@fontsource/orbitron": "^5.3.0",
+    "@fontsource/michroma": "^5.3.0",
     "@fontsource/rajdhani": "^5.3.0",
     "@fontsource/share-tech-mono": "^5.3.0",
     "@vitejs/plugin-react": "^6.1.2",

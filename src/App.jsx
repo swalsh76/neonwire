@@ -6,6 +6,7 @@ import Watchlist from './components/Watchlist.jsx';
 import Console from './components/Console.jsx';
 import SourceModal from './components/SourceModal.jsx';
 import RedditModal from './components/RedditModal.jsx';
+import FourchanModal from './components/FourchanModal.jsx';
 import { NEW_MS, velocity } from './lib/format.js';
 
 function useNow(ms) {
@@ -35,6 +36,7 @@ export default function App() {
   const [editing, setEditing] = useState(null); // null = closed, {} = new source, src = edit
   const [reddit, setReddit] = useState({ loggedIn: false, pending: false, clientId: '', username: '', redirectUri: '' });
   const [showReddit, setShowReddit] = useState(false);
+  const [showFourchan, setShowFourchan] = useState(false);
   const now = useNow(1000);
   const minute = Math.floor(now / 60_000) * 60_000; // re-sort at most once a minute
 
@@ -128,6 +130,7 @@ export default function App() {
         onEdit={setEditing}
         reddit={reddit}
         onReddit={() => setShowReddit(true)}
+        onFourchan={() => setShowFourchan(true)}
         now={now}
       />
       <Stream items={items} title={selectedName} now={now} watchKeys={watchKeys} sort={sort} setSort={setSort} />
@@ -135,6 +138,7 @@ export default function App() {
       <Console logs={logs} ticker={ticker} />
       {editing && <SourceModal initial={editing} sources={sources} onClose={() => setEditing(null)} />}
       {showReddit && <RedditModal status={reddit} onClose={() => setShowReddit(false)} />}
+      {showFourchan && <FourchanModal sources={sources} onClose={() => setShowFourchan(false)} />}
     </div>
   );
 }

@@ -125,6 +125,17 @@ export default function SourceModal({ initial, sources, onClose }) {
               </>
             )}
 
+            {form.type === 'fourchan' && (
+              <>
+                <Field label="BOARD">
+                  <input required value={form.board} placeholder="g" onChange={(e) => set('board', e.target.value.replace(/\//g, ''))} />
+                </Field>
+                <Field label="THREADS (BUMP ORDER)">
+                  <input type="number" min={5} max={150} value={form.limit} onChange={(e) => set('limit', Number(e.target.value))} />
+                </Field>
+              </>
+            )}
+
             {form.type === 'json' && (
               <>
                 <Field label="ENDPOINT URL" wide>

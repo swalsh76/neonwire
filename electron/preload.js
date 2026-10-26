@@ -15,6 +15,7 @@ contextBridge.exposeInMainWorld('wire', {
   watch: (item) => ipcRenderer.invoke('watch:add', item),
   unwatch: (key) => ipcRenderer.invoke('watch:remove', key),
   open: (url) => ipcRenderer.invoke('open', url),
+  fourchanBoards: () => ipcRenderer.invoke('fourchan:boards'),
   redditLogin: (creds) => ipcRenderer.invoke('reddit:login', creds),
   redditCancel: () => ipcRenderer.invoke('reddit:cancel'),
   redditLogout: () => ipcRenderer.invoke('reddit:logout'),

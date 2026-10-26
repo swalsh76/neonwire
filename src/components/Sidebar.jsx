@@ -28,7 +28,7 @@ function SourceRow({ s, feed, active, now, onSelect, onEdit }) {
         <span className="count">{items.length}</span>
       </div>
       <div className="src-sub">
-        <span className="type">{s.type}</span>
+        <span className="type">{s.type === 'fourchan' ? '4chan' : s.type}</span>
         <span className="status">{label}</span>
         <span className="actions">
           <button title="Refresh now" onClick={stop(() => wire().refresh(s.id))}>⟳</button>
@@ -45,7 +45,8 @@ function SourceRow({ s, feed, active, now, onSelect, onEdit }) {
   );
 }
 
-export default function Sidebar({ sources, feeds, selected, onSelect, onAdd, onEdit, reddit, onReddit, now }) {
+export default function Sidebar({ sources, feeds, selected, onSelect, onAdd, onEdit, reddit, onReddit, onFourchan, now }) {
+  const boards = sources.filter((s) => s.type === 'fourchan').length;
   const total = sources.filter((s) => s.enabled).reduce((n, s) => n + (feeds[s.id]?.items?.length || 0), 0);
   return (
     <aside className="panel sidebar">
@@ -82,8 +83,13 @@ export default function Sidebar({ sources, feeds, selected, onSelect, onAdd, onE
           <span className="dot" />
           <span className="uplink-name">REDDIT</span>
           <span className="uplink-state">
-            {reddit.pending ? 'LINKING…' : reddit.loggedIn ? `u/${reddit.username}` : 'ANONYMOUS · LOG IN'}
+            {reddit.pending ? 'LINKING…' : reddit.loggedIn ? `u/${reddit.username}` : 'LOG IN'}
           </span>
+        </button>
+        <button className={`uplink chan ${boards ? 'on' : ''}`} onClick={onFourchan} title="4chan boards">
+          <span className="dot" />
+          <span className="uplink-name">4CHAN</span>
+          <span className="uplink-state">{boards ? `${boards} BOARD${boards > 1 ? 'S' : ''}` : 'PICK BOARDS'}</span>
         </button>
       </footer>
     </aside>

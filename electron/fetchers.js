@@ -119,6 +119,68 @@ async function redditThread(id) {
   }
 }
 
+// ---- 4chan (read-only JSON API at a.4cdn.org) -----------------------------
+// API rules: at most one request per second, and honor If-Modified-Since.
+let fourchanNextSlot = 0;
+const fourchanCache = new Map(); // path -> { lastModified, data }
+
+async function fourchanGet(path) {
+  const wait = Math.max(0, fourchanNextSlot - Date.now());
+  fourchanNextSlot = Math.max(Date.now(), fourchanNextSlot) + 1100;
+  if (wait) await new Promise((r) => setTimeout(r, wait));
+
+  const cached = fourchanCache.get(path);
+  const res = await fetch(`https://a.4cdn.org${path}`, {
+    headers: { 'User-Agent': UA, ...(cached ? { 'If-Modified-Since': cached.lastModified } : {}) },
+    signal: AbortSignal.timeout(15000),
+  });
+  if (res.status === 304 && cached) return cached.data;
+  if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+  const data = await res.json();
+  const lastModified = res.headers.get('last-modified');
+  if (lastModified) fourchanCache.set(path, { lastModified, data });
+  return data;
+}
+
+// Thread "name": the subject, or (like 4chan's catalog) the start of the opening post.
+function fourchanTitle(op) {
+  if (op.sub) return clean(op.sub);
+  const text = clean(String(op.com || '').replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, ''));
+  if (!text) return `Thread No.${op.no}`;
+  return text.length > 110 ? `${text.slice(0, 110).trimEnd()}…` : text;
+}
+
+function fourchanItem(board, op) {
+  const url = `https://boards.4chan.org/${board}/thread/${op.no}`;
+  return {
+    key: `4chan:${board}:${op.no}`,
+    rawId: `${board}/${op.no}`,
+    title: fourchanTitle(op),
+    url,
+    discussionUrl: url,
+    author: op.name && op.name !== 'Anonymous' ? clean(op.name) : '',
+    score: null,
+    comments: num(op.replies),
+    time: toMs(op.time),
+    summary: '', // feed shows thread names only — no post bodies or images
+  };
+}
+
+async function fetchFourchan(src) {
+  const board = String(src.board || '').toLowerCase();
+  const pages = await fourchanGet(`/${board}/catalog.json`);
+  return pages
+    .flatMap((p) => p.threads)
+    .filter((t) => !t.sticky)
+    .slice(0, src.limit || 40) // catalog is in bump order
+    .map((t) => fourchanItem(board, t));
+}
+
+async function fetchBoards() {
+  const { boards } = await fourchanGet('/boards.json');
+  return boards.map((b) => ({ board: b.board, title: clean(b.title), nsfw: !b.ws_board }));
+}
+
 // ---- RSS / Atom -----------------------------------------------------------
 async function fetchRSS(src) {
   const feed = await rss.parseString(await http(src.url, 'text'));
@@ -163,7 +225,7 @@ async function fetchJSON(src) {
   });
 }
 
-const FETCHERS = { hn: fetchHN, reddit: fetchReddit, rss: fetchRSS, json: fetchJSON };
+const FETCHERS = { hn: fetchHN, reddit: fetchReddit, fourchan: fetchFourchan, rss: fetchRSS, json: fetchJSON };
 
 async function fetchSource(src) {
   const fn = FETCHERS[src.type];
@@ -175,7 +237,11 @@ async function fetchSource(src) {
 async function fetchThread(entry) {
   if (entry.type === 'hn') return hnItem(await http(`${HN}/item/${entry.rawId}.json`));
   if (entry.type === 'reddit') return redditThread(entry.rawId);
+  if (entry.type === 'fourchan') {
+    const [board, no] = entry.rawId.split('/');
+    return fourchanItem(board, (await fourchanGet(`/${board}/thread/${no}.json`)).posts[0]);
+  }
   return null;
 }
 
-module.exports = { fetchSource, fetchThread };
+module.exports = { fetchSource, fetchThread, fetchBoards };

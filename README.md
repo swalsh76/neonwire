@@ -4,7 +4,7 @@ A desktop app that polls news sites, forums and APIs, merges everything into one
 
 ## Features
 
-- **Multi-source polling**: Hacker News, Reddit, any RSS/Atom feed, and any JSON API (you map its fields with dot paths). Each source has its own poll interval and color.
+- **Multi-source polling**: Hacker News, Reddit, 4chan boards, any RSS/Atom feed, and any JSON API (you map its fields with dot paths). Each source has its own poll interval and color.
 - **Live stream**: all sources merged into one list. Sort by latest, hot (points per hour), top, or arrival order. New items get a flash and a `NEW` badge. Press `/` to search.
 - **Thread tracking**: hit `TRACK` on any item to record its score and comment count over time. Each tracked item gets a sparkline plus total and last-hour deltas. HN threads keep updating every 60s even after they drop off the front page.
 - **Desktop notifications** for new items, toggled per source.
@@ -69,6 +69,12 @@ To add a new source type, write a fetcher in `electron/fetchers.js`, register it
 Config and history live in `%APPDATA%/neonwire/neonwire.json`.
 
 ## Notes
+
+### 4chan boards
+
+Click **4CHAN** at the bottom of the sidebar, next to REDDIT, and check the boards you want. Worksafe boards (the former 4channel.org boards) are listed first; NSFW boards stay hidden until you tick **Show NSFW boards**. Each checked board becomes a source that polls its catalog in bump order.
+
+The stream shows **thread names only**: the subject line, or the opening text of the first post when there's no subject (like 4chan's own catalog). No images and no post text. Reply counts are shown, and tracked threads update from the thread API. NEONWIRE follows 4chan's API rules: at most one request per second, plus `If-Modified-Since` so unchanged catalogs aren't downloaded again.
 
 ### Reddit login
 

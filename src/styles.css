@@ -14,6 +14,8 @@
   --lime: #39ff14;
   --orange: #ff8a00;
   --red: #ff3860;
+  --reddit: #ff4500;
+  --chan: #5dff8f;
   --display: 'Orbitron', 'Segoe UI', sans-serif;
   --head: 'Rajdhani', 'Segoe UI', sans-serif;
   --mono: 'Share Tech Mono', 'Cascadia Code', Consolas, monospace;
@@ -469,24 +471,61 @@ input::placeholder { color: #5a5680; }
 .modal-foot { display: flex; justify-content: flex-end; gap: 10px; padding: 12px 18px; border-top: 1px solid var(--line); }
 
 /* ---- reddit uplink ------------------------------------------------------------ */
-.side-foot { border-top: 1px solid var(--line); padding: 8px 10px 12px; }
+/* ---- uplinks (reddit / 4chan) ------------------------------------------------ */
+.side-foot { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; border-top: 1px solid var(--line); padding: 8px 10px 12px; }
 .uplink {
   --c: #8d88b8;
-  display: flex;
+  --brand: var(--reddit);
+  display: grid;
+  grid-template-columns: auto 1fr;
   align-items: center;
-  gap: 9px;
-  width: 100%;
-  padding: 8px 10px;
+  column-gap: 8px;
+  row-gap: 3px;
+  min-width: 0;
+  padding: 7px 10px;
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid color-mix(in srgb, var(--c) 40%, transparent);
   cursor: pointer;
   text-align: left;
 }
-.uplink:hover { border-color: #ff4500; box-shadow: 0 0 14px -4px #ff4500; }
+.uplink.chan { --brand: var(--chan); }
+.uplink:hover { border-color: var(--brand); box-shadow: 0 0 14px -4px var(--brand); }
 .uplink.on { --c: var(--lime); }
-.uplink-name { font-family: var(--display); font-size: 10px; font-weight: 600; letter-spacing: 0.2em; color: #ff4500; text-shadow: 0 0 8px rgba(255, 69, 0, 0.7); }
-.uplink-state { margin-left: auto; font-size: 11px; color: var(--c); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.uplink-name { font-family: var(--display); font-size: 10px; font-weight: 600; letter-spacing: 0.2em; color: var(--brand); text-shadow: 0 0 8px color-mix(in srgb, var(--brand) 70%, transparent); }
+.uplink-state { grid-column: 1 / -1; font-size: 10px; letter-spacing: 0.05em; color: var(--c); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+.chan-modal { width: min(900px, calc(100vw - 40px)); }
+.chan-modal .lead { margin: 14px 0 10px; color: #c9c5ee; font-family: var(--head); font-size: 15px; line-height: 1.4; }
+.chan-tools { display: flex; align-items: center; gap: 16px; }
+.chan-tools input:not([type='checkbox']) { flex: 1; }
+.chan-tools .check { margin: 0; white-space: nowrap; }
+.chan-modal .check input { accent-color: var(--chan); }
+.lbl-count { color: var(--chan); margin-left: 4px; }
+.board-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 5px; }
+.board {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 6px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+.board:hover { border-color: color-mix(in srgb, var(--chan) 50%, transparent); }
+.board input { width: auto; flex: none; accent-color: var(--chan); }
+.board-id { flex: none; font-size: 12px; color: var(--chan); }
+.board-title { font-family: var(--head); font-weight: 600; font-size: 14px; color: #c9c5ee; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.board.on { border-color: var(--chan); background: color-mix(in srgb, var(--chan) 10%, transparent); box-shadow: 0 0 12px -6px var(--chan); }
+.board.on .board-title { color: #fff; }
+.board.nsfw .board-id { color: var(--pink); }
+.board.nsfw.on { border-color: var(--pink); background: color-mix(in srgb, var(--pink) 10%, transparent); }
+.diff { display: flex; gap: 12px; margin-right: auto; align-self: center; font-size: 11px; letter-spacing: 0.1em; }
+.diff .plus { color: var(--chan); }
+.diff .minus { color: var(--red); }
+
+.reddit-modal { --c: var(--reddit); }
 .reddit-modal .lead { margin: 14px 0 6px; color: #c9c5ee; font-family: var(--head); font-size: 15px; line-height: 1.4; }
 .steps { margin: 10px 0; padding-left: 22px; color: #c9c5ee; font-family: var(--head); font-size: 15px; line-height: 1.5; }
 .steps li { margin-bottom: 8px; }

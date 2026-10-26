@@ -2,11 +2,12 @@ const { app, BrowserWindow, ipcMain, shell, Notification } = require('electron')
 const path = require('path');
 const crypto = require('crypto');
 const store = require('./store');
-const { fetchSource, fetchThread } = require('./fetchers');
+const { fetchSource, fetchThread, fetchBoards } = require('./fetchers');
 const redditAuth = require('./reddit-auth');
 
 const DEV_URL = process.env.VITE_DEV_SERVER_URL;
-const SOURCE_TYPES = ['hn', 'reddit', 'rss', 'json'];
+const SOURCE_TYPES = ['hn', 'reddit', 'fourchan', 'rss', 'json'];
+const THREAD_API_TYPES = ['hn', 'reddit', 'fourchan']; // tracked threads refreshed directly, not just via feeds
 const WATCH_POLL_MS = 60_000;
 const MAX_HISTORY = 720;
 const MAX_SEEN = 1500;
@@ -137,7 +138,7 @@ function trackFromItems(items) {
 }
 
 async function pollWatch() {
-  const watch = store.get().watch.filter((e) => e.type === 'hn' || e.type === 'reddit');
+  const watch = store.get().watch.filter((e) => THREAD_API_TYPES.includes(e.type));
   if (!watch.length) return;
   const results = await Promise.allSettled(watch.map(async (e) => record(e, await fetchThread(e))));
   if (results.some((r) => r.status === 'fulfilled' && r.value)) {
@@ -151,7 +152,14 @@ function sanitizeSource(input, existing = {}) {
   const src = { ...existing, ...input };
   if (!SOURCE_TYPES.includes(src.type)) throw new Error(`Bad source type: ${src.type}`);
   src.id ||= `${src.type}-${crypto.randomUUID().slice(0, 8)}`;
-  const fallbackName = src.type === 'reddit' ? (src.subreddit ? `r/${src.subreddit}` : 'Reddit // Front page') : src.url;
+  if (src.type === 'fourchan') {
+    src.board = String(src.board || '').trim().replace(/^\/|\/$/g, '').toLowerCase();
+    if (!/^[a-z0-9]+$/.test(src.board)) throw new Error(`Bad 4chan board: "${src.board}"`);
+  }
+  const fallbackName =
+    src.type === 'reddit' ? (src.subreddit ? `r/${src.subreddit}` : 'Reddit // Front page')
+    : src.type === 'fourchan' ? `/${src.board}/`
+    : src.url;
   src.name = String(src.name || fallbackName || src.type).slice(0, 80);
   src.intervalSec = Math.max(30, Number(src.intervalSec) || 120);
   src.enabled = src.enabled !== false;
@@ -224,6 +232,8 @@ ipcMain.handle('watch:remove', (_e, key) => {
 });
 
 ipcMain.handle('open', (_e, url) => openExternal(url));
+
+ipcMain.handle('fourchan:boards', () => fetchBoards());
 
 // ---- Reddit login ----------------------------------------------------------
 const resyncReddit = () =>

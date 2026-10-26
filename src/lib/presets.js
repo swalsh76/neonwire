@@ -1,4 +1,4 @@
-export const TYPES = { rss: 'RSS / ATOM', hn: 'HACKER NEWS', reddit: 'REDDIT', json: 'JSON API' };
+export const TYPES = { rss: 'RSS / ATOM', hn: 'HACKER NEWS', reddit: 'REDDIT', fourchan: '4CHAN', json: 'JSON API' };
 
 export const PALETTE = ['#00f0ff', '#ff2bd6', '#f9f002', '#39ff14', '#ff8a00', '#b967ff', '#ff3860', '#05ffa1'];
 
@@ -13,6 +13,7 @@ export const BLANK = {
   rss: { url: '', intervalSec: 300 },
   hn: { list: 'topstories', limit: 30, intervalSec: 60 },
   reddit: { subreddit: '', sort: 'hot', intervalSec: 120 },
+  fourchan: { board: '', limit: 40, intervalSec: 120 },
   json: { url: '', itemsPath: '', fields: { id: 'id', title: 'title', url: 'url' }, intervalSec: 180 },
 };
 

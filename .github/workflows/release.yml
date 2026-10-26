@@ -37,6 +37,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v3
         with:
+          name: NEONWIRE ${{ github.ref_name }}
           generate_release_notes: true
           files: |
             release/*.exe
